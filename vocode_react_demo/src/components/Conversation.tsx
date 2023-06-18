@@ -1,12 +1,25 @@
 import { Box, Button, HStack, VStack, Select, Spinner } from "@chakra-ui/react";
 import React from "react";
-import { useConversation, AudioDeviceConfig, ConversationConfig } from "vocode";
+import { AudioDeviceConfig, ConversationConfig } from "vocode"
+import { useConversation } from "./conversationModule";
 import MicrophoneIcon from "./MicrophoneIcon";
 import AudioVisualization from "./AudioVisualization";
 import { isMobile } from "react-device-detect";
 import axios from "axios";
-import { ElevenLabsSynthesizerConfig, AzureSynthesizerConfig } from "vocode";
+import { ElevenLabsSynthesizerConfig, SynthesizerConfig } from "vocode";
 const backendUrl:string = process.env.VOCODE_BACKEND_URL || "wss://comic.mydevtest.in/api/conversation";
+// const backendUrl:string = process.env.VOCODE_BACKEND_URL || "ws://localhost:8000/api/conversation";
+type SelfHostedConversationConfig = {
+  backendUrl: string;
+  audioDeviceConfig: AudioDeviceConfig;
+  conversationId?: string;
+  timeSlice?: number;
+  chunkSize?: number;
+  downsampling?: number;
+  subscribeTranscript?: boolean;
+  synthesizerConfig: Omit<SynthesizerConfig, "samplingRate" | "audioEncoding">;
+};
+
 const Conversation = ({
   config,
 }: {
@@ -20,14 +33,18 @@ const Conversation = ({
   const [outputDevices, setOutputDevices] = React.useState<MediaDeviceInfo[]>(
     []
   );
-  // let transcripts: any[] = [];
-  // const { status, start, stop, analyserNode } = useConversation(
-  //   Object.assign(config, { audioDeviceConfig })
-  // );
+  let agentConfig = config.agentConfig
+  let transcriberConfig = config.transcriberConfig
+  let synthesizerConfig = config.synthesizerConfig
+  let vocodeConfig = config.vocodeConfig
   const { status, start, stop, analyserNode, transcripts } = useConversation({
     backendUrl: backendUrl,
     subscribeTranscript: false,
     audioDeviceConfig,
+    synthesizerConfig,
+    agentConfig,
+    transcriberConfig,
+    vocodeConfig
   });
 
   const fetchData = () => {
@@ -199,7 +216,7 @@ const Conversation = ({
           alignItems="left"
           overflowY="auto"
         >
-          {transcripts.map((item, index) => {
+          {transcripts.map((item:any, index:any) => {
             return (
               <Box key={"t" + index.toString()} color="white">
                 {item.sender}: {item.text}
