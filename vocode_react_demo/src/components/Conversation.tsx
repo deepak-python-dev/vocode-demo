@@ -6,7 +6,7 @@ import AudioVisualization from "./AudioVisualization";
 import { isMobile } from "react-device-detect";
 import axios from "axios";
 import { ElevenLabsSynthesizerConfig, AzureSynthesizerConfig } from "vocode";
-const backendUrl:string = process.env.VOCODE_BACKEND_URL || "";
+const backendUrl:string = process.env.VOCODE_BACKEND_URL || "wss://comic.mydevtest.in/api/conversation";
 const Conversation = ({
   config,
 }: {
