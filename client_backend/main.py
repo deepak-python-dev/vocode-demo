@@ -36,4 +36,4 @@ conversation_router = ConversationRouter(
     logger=logger,
 )
 
-app.include_router(conversation_router.get_router())
+app.include_router(conversation_router.get_router(), prefix="/api")
