@@ -7,7 +7,7 @@ import AudioVisualization from "./AudioVisualization";
 import { isMobile } from "react-device-detect";
 import axios from "axios";
 import { ElevenLabsSynthesizerConfig, SynthesizerConfig } from "vocode";
-const backendUrl:string = process.env.VOCODE_BACKEND_URL || "wss://comic.mydevtest.in/api/conversation";
+const backendUrl:string = process.env.VOCODE_BACKEND_URL || "wss://voice.foxclear.com/api/conversation";
 // const backendUrl:string = process.env.VOCODE_BACKEND_URL || "ws://localhost:8000/api/conversation";
 type SelfHostedConversationConfig = {
   backendUrl: string;
