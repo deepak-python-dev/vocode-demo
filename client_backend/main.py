@@ -45,9 +45,9 @@ class CustomConversationRouter(ConversationRouter):
         transcriber = self.transcriber_thunk(start_message.input_audio_config)
         synthesizer = self.synthesizer_thunk(start_message.output_audio_config)
         synthesizer.synthesizer_config.should_encode_as_wav = True
-        voice_id = raw_message.get("synthesizer_config",{}).get("voice_id")
-        if voice_id:
-            synthesizer.voice_id=voice_id
+        # voice_id = raw_message.get("synthesizer_config",{}).get("voice_id")
+        # if voice_id:
+        #     synthesizer.voice_id=voice_id
         return StreamingConversation(
             output_device=output_device,
             transcriber=transcriber,
@@ -86,11 +86,6 @@ conversation_router = CustomConversationRouter(
         ChatGPTAgentConfig(
             initial_message=BaseMessage(text="Hello!"),
             prompt_preamble="Have a pleasant conversation about life",
-        )
-    ),
-    synthesizer_thunk=lambda output_audio_config: ElevenLabsSynthesizer(
-        ElevenLabsSynthesizerConfig.from_output_audio_config(
-            output_audio_config
         )
     ),
     logger=logger,

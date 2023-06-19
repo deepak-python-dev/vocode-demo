@@ -45,26 +45,25 @@ const App = () => {
     generateResponses: true,
     cutOffResponse: {},
   };
-  // const synthesizerConfig: Omit<
-  //   AzureSynthesizerConfig,
-  //   "samplingRate" | "audioEncoding"
-  // > = {
-  //   type: "synthesizer_azure",
-  //   shouldEncodeAsWav: true,
-  //   voiceName: "en-US-SteffanNeural",
-  // };
   const synthesizerConfig: Omit<
-  ElevenLabsSynthesizerConfig,
+    AzureSynthesizerConfig,
     "samplingRate" | "audioEncoding"
   > = {
-    type: "synthesizer_eleven_labs",
-    voiceId: "21m00Tcm4TlvDq8ikWAM",
-    shouldEncodeAsWav: true
+    type: "synthesizer_azure",
+    shouldEncodeAsWav: true,
+    voiceName: "en-US-SteffanNeural",
   };
+  // const synthesizerConfig: Omit<
+  // ElevenLabsSynthesizerConfig,
+  //   "samplingRate" | "audioEncoding"
+  // > = {
+  //   type: "synthesizer_eleven_labs",
+  //   voiceId: "21m00Tcm4TlvDq8ikWAM",
+  //   shouldEncodeAsWav: true
+  // };
   const vocodeConfig: VocodeConfig = {
     apiKey: process.env.REACT_APP_VOCODE_API_KEY || "",
   };
-  console.log(process.env.VOCODE_BACKEND_URL)
   return (
     <ChakraProvider>
       {(isMobile || !isChrome) && !isSafari ? (

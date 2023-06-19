@@ -7,18 +7,8 @@ import AudioVisualization from "./AudioVisualization";
 import { isMobile } from "react-device-detect";
 import axios from "axios";
 import { ElevenLabsSynthesizerConfig, SynthesizerConfig } from "vocode";
-const backendUrl:string = process.env.VOCODE_BACKEND_URL || "wss://voice.foxclear.com/api/conversation";
+const backendUrl:string = process.env.REACT_APP_VOCODE_BACKEND_URL || "wss://voice.foxclear.com/api/conversation";
 // const backendUrl:string = process.env.VOCODE_BACKEND_URL || "ws://localhost:8000/api/conversation";
-type SelfHostedConversationConfig = {
-  backendUrl: string;
-  audioDeviceConfig: AudioDeviceConfig;
-  conversationId?: string;
-  timeSlice?: number;
-  chunkSize?: number;
-  downsampling?: number;
-  subscribeTranscript?: boolean;
-  synthesizerConfig: Omit<SynthesizerConfig, "samplingRate" | "audioEncoding">;
-};
 
 const Conversation = ({
   config,
@@ -47,26 +37,26 @@ const Conversation = ({
     vocodeConfig
   });
 
-  const fetchData = () => {
-    axios
-      .get("https://api.elevenlabs.io/v1/voices")
-      .then((response) => {
-        // Handle the response data
-        setVoices(response.data?.voices);
-      })
-      .catch((error) => {
-        // Handle any errors
-        console.error(error);
-      });
-  };
+  // const fetchData = () => {
+  //   axios
+  //     .get("https://api.elevenlabs.io/v1/voices")
+  //     .then((response) => {
+  //       // Handle the response data
+  //       setVoices(response.data?.voices);
+  //     })
+  //     .catch((error) => {
+  //       // Handle any errors
+  //       console.error(error);
+  //     });
+  // };
 
-  React.useEffect(() => {
-    fetchData();
-  }, []);
+  // React.useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   React.useEffect(() => {
     navigator.mediaDevices
-      .enumerateDevices()
+      ?.enumerateDevices()
       .then((devices) => {
         setInputDevices(
           devices.filter(
@@ -177,7 +167,7 @@ const Conversation = ({
               );
             })}
           </Select>
-          <Select
+          {/* <Select
             color={"#FFFFFF"}
             disabled={["connecting", "connected"].includes(status)}
             onChange={(event) => {
@@ -203,7 +193,7 @@ const Conversation = ({
                 </option>
               );
             })}
-          </Select>
+          </Select> */}
         </HStack>
       )}
       {transcripts.length > 0 && (
