@@ -12,7 +12,7 @@ client_backend/.env.template
 vocode_react_demo/node_modules
 /.pnp
 .pnp.js
-
+.idea
 # testing
 /coverage
 
