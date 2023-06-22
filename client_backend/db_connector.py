@@ -73,14 +73,3 @@ class TbMessage(Database):
         return data
 
 
-
-db = TbMessage(host=os.getenv("DB_HOST"),
-               user=os.getenv("DB_USERNAME"),
-               password=os.getenv("DB_PASSWORD"),
-               database=os.getenv("DB_DATABASE"))
-db.connect()
-
-active_message_row=db.fetch_result()
-active_message_row=active_message_row[0]
-print(f"active_message_row {active_message_row}")
-print(f"message {active_message_row['message']}")
