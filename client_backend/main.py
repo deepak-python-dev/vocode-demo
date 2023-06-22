@@ -2,6 +2,7 @@ import logging
 from fastapi import FastAPI
 from dotenv import load_dotenv
 import os
+
 load_dotenv()
 from vocode.streaming.models.agent import ChatGPTAgentConfig
 from vocode.streaming.models.synthesizer import ElevenLabsSynthesizerConfig
@@ -42,7 +43,8 @@ logger.setLevel(logging.DEBUG)
 class CustomConversationRouter(ConversationRouter):
     DEFAULT_VOICE_ID = "pNInz6obpgDQGcFmaJgB"
 
-    def get_conversation(self,output_device: WebsocketOutputDevice,start_message: AudioConfigStartMessage,raw_message: typing.Any) -> StreamingConversation:
+    def get_conversation(self, output_device: WebsocketOutputDevice, start_message: AudioConfigStartMessage,
+                         raw_message: typing.Any) -> StreamingConversation:
         transcriber = self.transcriber_thunk(start_message.input_audio_config)
         synthesizer = self.synthesizer_thunk(start_message.output_audio_config)
         synthesizer.synthesizer_config.should_encode_as_wav = True
@@ -84,16 +86,20 @@ class CustomConversationRouter(ConversationRouter):
         conversation.terminate()
 
 
+print(os.getenv("DB_HOST"), "host")
+print(os.getenv("DB_USERNAME"), "DB_USERNAME")
+print(os.getenv("DB_PASSWORD"), "DB_PASSWORD")
+print(os.getenv("DB_DATABASE"), "DB_DATABASE")
+
 db = TbMessage(host=os.getenv("DB_HOST"),
                user=os.getenv("DB_USERNAME"),
                password=os.getenv("DB_PASSWORD"),
                database=os.getenv("DB_DATABASE"))
 db.connect()
 
-active_message_row=db.fetch_result()
-active_message_row=active_message_row[0]
-print(f"active_message_row {active_message_row}")
-print(f"message {active_message_row['message']}")
+active_message_row = db.fetch_result()
+active_message_row = active_message_row[0]
+
 conversation_router = CustomConversationRouter(
     agent=ChatGPTAgent(
         ChatGPTAgentConfig(
