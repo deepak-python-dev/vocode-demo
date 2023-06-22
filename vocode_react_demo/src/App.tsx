@@ -38,7 +38,7 @@ const App = () => {
   };
   const agentConfig: ChatGPTAgentConfig = {
     type: "agent_chat_gpt",
-    initialMessage: { type: "message_base", text: "Hello!" },
+    initialMessage: { type: "message_base", text: "Frontend Code" },
     promptPreamble:
       "The AI is having a pleasant conversation about life",
     endConversationOnGoodbye: true,

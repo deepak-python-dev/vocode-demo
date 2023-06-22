@@ -1,3 +1,4 @@
 vocode
 python-dotenv
 elevenlabs
+mysqlclient

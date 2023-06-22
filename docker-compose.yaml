@@ -1,6 +1,7 @@
 services:
   backend:
-    build: 
+    build:
+      context: .
       dockerfile: ./docker_files/backend.Dockerfile
     ports:
       - 8000:8000
@@ -11,7 +12,8 @@ services:
       - ./client_backend:/app:rw
     restart: always
   frontend:
-    build: 
+    build:
+      context: .
       dockerfile: ./docker_files/frontend.Dockerfile
     ports:
       - 3000:3000

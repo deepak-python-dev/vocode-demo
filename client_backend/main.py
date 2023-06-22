@@ -1,10 +1,11 @@
 import logging
 from fastapi import FastAPI
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
 from vocode.streaming.models.agent import ChatGPTAgentConfig
 from vocode.streaming.models.synthesizer import ElevenLabsSynthesizerConfig
 from vocode.streaming.synthesizer.eleven_labs_synthesizer import ElevenLabsSynthesizer
-
 
 from vocode.streaming.agent.chat_gpt_agent import ChatGPTAgent
 from vocode.streaming.client_backend.conversation import ConversationRouter
@@ -27,6 +28,8 @@ from vocode.streaming.streaming_conversation import StreamingConversation
 
 from dotenv import load_dotenv
 
+from db_connector import TbMessage
+
 load_dotenv()
 
 app = FastAPI(docs_url=None)
@@ -34,14 +37,12 @@ app = FastAPI(docs_url=None)
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+
 class CustomConversationRouter(ConversationRouter):
     DEFAULT_VOICE_ID = "pNInz6obpgDQGcFmaJgB"
-    def get_conversation(
-        self,
-        output_device: WebsocketOutputDevice,
-        start_message: AudioConfigStartMessage,
-        raw_message: typing.Any
-    ) -> StreamingConversation:
+
+    def get_conversation(self,output_device: WebsocketOutputDevice,start_message: AudioConfigStartMessage,raw_message: typing.Any) -> StreamingConversation:
         transcriber = self.transcriber_thunk(start_message.input_audio_config)
         synthesizer = self.synthesizer_thunk(start_message.output_audio_config)
         synthesizer.synthesizer_config.should_encode_as_wav = True
@@ -81,14 +82,26 @@ class CustomConversationRouter(ConversationRouter):
             conversation.receive_audio(audio_message.get_bytes())
         output_device.mark_closed()
         conversation.terminate()
+
+
+db = TbMessage(host=os.getenv("DB_HOST"),
+               user=os.getenv("DB_USERNAME"),
+               password=os.getenv("DB_PASSWORD"),
+               database=os.getenv("DB_DATABASE"))
+db.connect()
+
+active_message_row=db.fetch_result()
+active_message_row=active_message_row[0]
+print(f"active_message_row {active_message_row}")
+print(f"message {active_message_row['message']}")
 conversation_router = CustomConversationRouter(
     agent=ChatGPTAgent(
         ChatGPTAgentConfig(
-            initial_message=BaseMessage(text="Hello!"),
+            initial_message=BaseMessage(text=f"{active_message_row['message']}"),
             prompt_preamble="Have a pleasant conversation about life",
         )
     ),
     logger=logger,
 )
-
+db.disconnect()
 app.include_router(conversation_router.get_router(), prefix="/api")
