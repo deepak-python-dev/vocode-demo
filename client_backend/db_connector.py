@@ -1,9 +1,9 @@
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
-import os
-import MySQLdb
 
+import MySQLdb
 
 class Database:
     def __init__(self, host, user, password, database):
@@ -33,8 +33,10 @@ class Database:
         try:
             self.cursor.execute(query)
             self.connection.commit()
+
             return "success"
         except MySQLdb.Error as e:
+            print(e)
             return f"Error executing query: {e}"
 
 
@@ -44,19 +46,23 @@ class TbMessage(Database):
         Database.execute_query(self, """CREATE TABLE message_table (
                                             id INT PRIMARY KEY AUTO_INCREMENT,
                                             message TEXT,
+                                            prompt_preamble TEXT,
                                             is_active TINYINT DEFAULT 0);""")
 
         return True
 
-    def insert_data(self, message, is_active):
+    def insert_data(self, message, prompt_preamble,is_active):
+
         if int(is_active) == 1:
             deactivate_query = "UPDATE message_table SET is_active = 0"
             Database.execute_query(self, deactivate_query)
+            print(2)
         if int(is_active) != 1 or int(is_active) != 0:
-            return "Active should be 1 or 0"
+
+            is_active=0
 
         result = Database.execute_query(self,
-                                        f"INSERT into message_table (message, is_active) VALUES('{message}',{is_active});")
+                                        f"INSERT into message_table (message, prompt_preamble,is_active) VALUES('{message}','{prompt_preamble}',{is_active});")
 
         return result
 
@@ -69,7 +75,27 @@ class TbMessage(Database):
 
         results = self.cursor.fetchall()
         if results:
-            data = [dict(id=row[0], message=row[1], is_active=row[2]) for row in results]
+            data = [dict(id=row[0], message=row[1],prompt_preamble=row[3], is_active=row[2]) for row in results]
         return data
+
+def ReturnMessageFromDB():
+    BaseMessageText="Hi,How can i Help you ?"
+    prompt_preamble="Have a pleasant conversation about life"
+    try:
+        db = TbMessage(host=os.getenv("DB_HOST"),
+                       user=os.getenv("DB_USERNAME"),
+                       password=os.getenv("DB_PASSWORD"),
+                       database=os.getenv("DB_DATABASE"))
+        db.connect()
+        active_message_row = db.fetch_result()
+
+        BaseMessageText = active_message_row[0]["message"]
+        prompt_preamble = active_message_row[0]["prompt_preamble"]
+
+    except:
+        pass
+    return BaseMessageText,prompt_preamble
+
+
 
 

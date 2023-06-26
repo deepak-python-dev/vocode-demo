@@ -1,7 +1,8 @@
 import logging
+import os
 from fastapi import FastAPI
 from dotenv import load_dotenv
-import os
+
 
 load_dotenv()
 from vocode.streaming.models.agent import ChatGPTAgentConfig
@@ -29,7 +30,7 @@ from vocode.streaming.streaming_conversation import StreamingConversation
 
 from dotenv import load_dotenv
 
-from db_connector import TbMessage
+from db_connector import  ReturnMessageFromDB
 
 load_dotenv()
 
@@ -85,29 +86,18 @@ class CustomConversationRouter(ConversationRouter):
         output_device.mark_closed()
         conversation.terminate()
 
+BaseMessageText,PromtPreambleText=ReturnMessageFromDB()
 
-print(os.getenv("DB_HOST"), "host")
-print(os.getenv("DB_USERNAME"), "DB_USERNAME")
-print(os.getenv("DB_PASSWORD"), "DB_PASSWORD")
-print(os.getenv("DB_DATABASE"), "DB_DATABASE")
 
-db = TbMessage(host=os.getenv("DB_HOST"),
-               user=os.getenv("DB_USERNAME"),
-               password=os.getenv("DB_PASSWORD"),
-               database=os.getenv("DB_DATABASE"))
-db.connect()
-print(db.connect() ,"db.connect()")
-active_message_row = db.fetch_result()
-active_message_row = active_message_row[0]
 
 conversation_router = CustomConversationRouter(
     agent=ChatGPTAgent(
         ChatGPTAgentConfig(
-            initial_message=BaseMessage(text=f"{active_message_row['message']}"),
-            prompt_preamble="Have a pleasant conversation about life",
+            initial_message=BaseMessage(text=f"{BaseMessageText}"),
+            prompt_preamble=f"{PromtPreambleText}",
         )
     ),
     logger=logger,
 )
-db.disconnect()
+
 app.include_router(conversation_router.get_router(), prefix="/api")
