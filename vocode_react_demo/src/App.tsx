@@ -70,7 +70,7 @@ const App = () => {
         <VStack padding={10} alignItems="center">
           <WarningIcon boxSize={100} />
           <Text paddingTop={4}>
-            This Vocode-AI works on: Chrome (desktop) and Safari (desktop, mobile)
+            This demo works on: Chrome (desktop) and Safari (desktop, mobile)
             only!
           </Text>
         </VStack>
